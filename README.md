@@ -13,4 +13,5 @@ Start by running `npm install` inside the project folder
 `npm run start-prod` to run your production build
 
 ## Render deployment:
+trye it out here:
 https://fullstack-11-efof.onrender.com
