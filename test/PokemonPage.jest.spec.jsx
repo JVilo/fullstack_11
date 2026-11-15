@@ -130,4 +130,9 @@ describe('<PokemonPage />', () => {
     expect(screen.queryByText('Previous')).toBeNull()
     expect(screen.queryByText('Next')).toBeNull()
   })
+
+// Temporary failing test for pipeline notification
+  it('should fail intentionally', () => {
+    expect(true).toBe(false)
+  })
 })
