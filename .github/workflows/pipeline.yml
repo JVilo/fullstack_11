@@ -41,7 +41,7 @@ jobs:
 
       - name: Send Discord Success/Failure Notification
         uses: sarisia/actions-status-discord@v1
-        if: always()
+        if: ${{ always() && github.event_name == 'push' }}
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
 
