@@ -39,12 +39,12 @@ jobs:
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
-      - name: Send Discord Success Notification
-        uses: sarisia/actions-status-discord@v1
-        if: ${{ success() && github.event_name == 'push' }}
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deployment Successful! A new version deployed to production"
+          nodetail: true
+          title: "** Deployment Successful! ** A new version deployed to production"
           description: |
             **Deployment Details**
             **Commit:** ${{ github.sha }}
@@ -57,7 +57,14 @@ jobs:
         if: ${{ failure() && github.event_name == 'push' }}
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Build Failed! The pipeline encountered an error"
+          title: "** Build Failed! ** The pipeline encountered an error"
+          description: |
+            **Deployment Details**
+            **Commit:** ${{ github.sha }}
+            **Message:** ${{ github.event.head_commit.message }}
+            **Author:** ${{ github.event.head_commit.author.name }}
+            **Workflow:** ${{ github.workflow }}
+            **Job:** ${{ github.job }}
           color: 0xff0000
 
   tag_release:
