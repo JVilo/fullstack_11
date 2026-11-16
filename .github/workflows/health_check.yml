@@ -2,8 +2,6 @@ name: Periodic health check
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '*/15 * * * *'
 
 jobs:
   health_check:
@@ -14,4 +12,4 @@ jobs:
         with:
           url: https://fullstack-11-efof.onrender.com
           max-attempts: 3
-          retry-delay: 15s
+          retry-delay: 5s
