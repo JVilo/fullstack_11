@@ -38,13 +38,13 @@ jobs:
   deploy:
     needs: [build_and_test]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    if: ${{ github.event_name == 'push' }}
     steps:
       - name: Trigger deployment
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
   notify_success:
-    needs: [build_and_test]
+    needs: [deploy]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     steps:
