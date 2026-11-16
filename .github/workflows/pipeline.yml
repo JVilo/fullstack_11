@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -35,11 +35,21 @@ jobs:
       - name: Run e2e tests
         run: npm run test:e2e
 
+  deploy:
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    steps:
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
-      - uses: sarisia/actions-status-discord@v1
+  notify_success:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Send Discord Success Notification
+        uses: sarisia/actions-status-discord@v1
         if: ${{ success() && github.event_name == 'push' }}
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -52,6 +62,11 @@ jobs:
             **Author:** ${{ github.event.head_commit.author.name }}
           color: 0x00ff00
 
+  notify_failure:
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
       - name: Send Discord Failure Notification
         uses: sarisia/actions-status-discord@v1
         if: ${{ failure() && github.event_name == 'push' }}
@@ -65,16 +80,15 @@ jobs:
             **Author:** ${{ github.event.head_commit.author.name }}
             **Workflow:** ${{ github.workflow }}
             **Job:** ${{ github.job }}
-            [Click here to view full error logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           color: 0xff0000
 
   tag_release:
-    needs: [ simple_deployment_pipeline ]
+    needs: [ deploy ]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v6
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
