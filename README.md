@@ -13,5 +13,10 @@ Start by running `npm install` inside the project folder
 `npm run start-prod` to run your production build
 
 ## Render deployment:
-trye it out here:
+try it out here:
 https://fullstack-11-efof.onrender.com
+
+## Exercises 21 and 22 repository:
+
+
+https://github.com/JVilo/fullstack-phonebook-pipeline
