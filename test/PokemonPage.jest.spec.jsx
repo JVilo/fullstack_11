@@ -131,7 +131,7 @@ describe('<PokemonPage />', () => {
     expect(screen.queryByText('Next')).toBeNull()
   })
 
-// Temporary failing test for pipeline notification
+  // Temporary failing test for pipeline notification
   it('should fail intentionally', () => {
     expect(true).toBe(false)
   })
